@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Webhook Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: url('https://i.imgur.com/Ofp23p0.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+        }
+        .header {
+            width: 100%;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+        .header .title {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+            background: rgba(42, 42, 61, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        .container h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .container input, .container textarea, .container button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
+        }
+        .container button {
+            background-color: #382861;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .container button:hover {
+            background-color: #2e1f50;
+        }
+        .instructions-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .instructions-popup {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: rgba(42, 42, 61, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.imgur.com/IsXgFpk.png" alt="Origin Zero Logo">
+        <div class="title">Origin Zero Nation Feed</div>
+    </div>
+    <div class="container">
+        <h1>Discord Webhook Sender</h1>
+        <form id="webhookForm">
+            <label for="webhookUrl">Webhook URL</label>
+            <input type="url" id="webhookUrl" name="webhookUrl" placeholder="Enter your Discord webhook URL" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" placeholder="Enter the message to send" required></textarea>
+
+            <button type="submit">Send Message</button>
+        </form>
+        <p id="response" style="color: red; text-align: center;"></p>
+    </div>
+
+    <button class="instructions-button" onclick="toggleInstructions()">?</button>
+    <div class="instructions-popup" id="instructionsPopup">
+        <p>Enter your Discord webhook URL and the message you wish to send in the fields above. This tool will send your message directly to the webhook using a POST request.</p>
+    </div>
+
+    <script>
+        function toggleInstructions() {
+            const popup = document.getElementById('instructionsPopup');
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.getElementById('webhookForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            const message = document.getElementById('message').value;
+            const responseElement = document.getElementById('response');
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: message }),
+                });
+
+                if (response.ok) {
+                    responseElement.style.color = 'green';
+                    responseElement.textContent = 'Message sent successfully!';
+                } else {
+                    responseElement.style.color = 'red';
+                    responseElement.textContent = 'Failed to send message. Check the webhook URL.';
+                }
+            } catch (error) {
+                responseElement.style.color = 'red';
+                responseElement.textContent = 'An error occurred: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
